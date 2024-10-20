@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Events\GamesUpdated;
 use App\Models\Game;
 use Illuminate\Http\JsonResponse;
 
@@ -21,12 +22,16 @@ class GamesController extends Controller
 
         $game->users()->syncWithoutDetaching(auth()->user());
 
+        broadcast(new GamesUpdated);
+
         return response()->json($game);
     }
 
     public function leave(Game $game): JsonResponse
     {
         $game->users()->detach(auth()->user());
+
+        broadcast(new GamesUpdated);
 
         return response()->json($game);
     }
